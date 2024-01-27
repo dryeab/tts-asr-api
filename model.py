@@ -8,8 +8,6 @@ from transformers import Wav2Vec2ForCTC, Wav2Vec2Tokenizer, AutoProcessor
 
 def asr(file_name):
     data = wavfile.read(file_name)
-    framerate = data[0]
-    sounddata = data[1]
 
     model_id = "facebook/mms-1b-fl102"
     tokenizer = AutoProcessor.from_pretrained(model_id)
