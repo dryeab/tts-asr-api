@@ -4,7 +4,7 @@ import numpy as np
 import soundfile as sf
 from scipy.io import wavfile
 from transformers import Wav2Vec2ForCTC, Wav2Vec2Tokenizer, AutoProcessor
-
+from easymms.models.tts import TTSModel
 
 def asr(file_name):
     data = wavfile.read(file_name)
@@ -22,3 +22,16 @@ def asr(file_name):
     text = tokenizer.batch_decode(predicted_ids)[0]
 
     return text
+
+
+def tts(text, file_name):
+
+    # text = "በደም አፋሳሹ እና አስከፊው የትግራይ ጦርነት ምክንያት በተፈጠረ መቃቃርና አለመጣጣም የትግራይ የኦርቶዶክስ የሃይማኖት አባቶች ከኢትዮጵያ ኦሮቶዶክስ ቤተክርስትያን ተለይተው መንበረ ሰላማ በሚል የራሳቸው ቤተክህነት ማቋቋማቸው ይታወቃል።"
+
+    tts = TTSModel('amh')
+    from pathlib import Path
+    tts.uroman_dir_path = Path("./uroman/bin")
+    res = tts.synthesize(text)
+    tts.save(res, file_name)
+
+# Audio(res[0], rate=res[1])
