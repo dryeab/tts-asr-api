@@ -5,9 +5,16 @@ import model
 from pathlib import Path
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from chatgpt_client import ChatGPTClient
 
+from dotenv import load_dotenv
+
+load_dotenv()
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 app = FastAPI()
+
+client = ChatGPTClient(OPENAI_API_KEY)
 
 origins = ["*"]
 
@@ -36,11 +43,15 @@ async def upload_file(file: UploadFile = File(...)):
             # Get the path of the temporary file
             tmp_file_path = tmp_audio_file.name
 
-            return {"text": model.asr(tmp_file_path)}
+            transcribed_text = model.asr(tmp_file_path)
+
+            response = client.query(transcribed_text)
+
+            return {"text": response}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="192.168.0.172", port=8000)
+    uvicorn.run(app)

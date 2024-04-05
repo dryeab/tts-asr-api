@@ -32,3 +32,6 @@ torch
 torchaudio
 transformers==4.37.1
 uvicorn==0.27.0
+googletrans-py
+openai==0.27.0
+python-dotenv==1.0.0
