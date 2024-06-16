@@ -1,10 +1,13 @@
 import librosa
-import torch
+import torch 
+import requests
 import numpy as np
 import soundfile as sf
 from scipy.io import wavfile
 from transformers import Wav2Vec2ForCTC, Wav2Vec2Tokenizer, AutoProcessor
 from easymms.models.tts import TTSModel
+
+BASE_URL = "https://bekitila-temporary.hf.space/generate"
 
 def asr(file_name):
     data = wavfile.read(file_name)
@@ -26,12 +29,19 @@ def asr(file_name):
 
 def tts(text, file_name):
 
-    # text = "በደም አፋሳሹ እና አስከፊው የትግራይ ጦርነት ምክንያት በተፈጠረ መቃቃርና አለመጣጣም የትግራይ የኦርቶዶክስ የሃይማኖት አባቶች ከኢትዮጵያ ኦሮቶዶክስ ቤተክርስትያን ተለይተው መንበረ ሰላማ በሚል የራሳቸው ቤተክህነት ማቋቋማቸው ይታወቃል።"
-
     tts = TTSModel('amh')
     from pathlib import Path
     tts.uroman_dir_path = Path("./uroman/bin")
     res = tts.synthesize(text)
     tts.save(res, file_name)
 
-# Audio(res[0], rate=res[1])
+
+def ask_model(prompt):
+
+    res = requests.post(
+        BASE_URL, json={
+        "input": prompt
+        }
+    )
+        
+    return res.json()["response"].split("### Response:")[0].replace("\n", "")
